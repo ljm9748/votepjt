@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>main page</h1>
+  <a href="{% url 'questions:create' %}" class="btn btn-primary">Create</a>
+  {% comment %} {% for question in questions %} {% endcomment %}
+    <p>{{ question.title }}</p>
+
+    {% if request.user.is_voted %}
+    <div>
+      <p>
+      <a href="#" class="btn btn-secondary" onclick="confirm('이미 투표하셨습니다.')">{{ question.first_question }}</a>
+      {{ question.first_count }}
+      ({{ first_rate }} %)
+      </p>
+    </div>
+    <br>
+
+    <div>
+      <p>
+      <a href="#" class="btn btn-secondary" onclick="confirm('이미 투표하셨습니다.')">{{ question.second_question }}</a>
+      {{ question.second_count }}
+      ({{ second_rate }} %)
+      </p>
+    </div>
+
+    {% else %}
+      <div>
+        <p>
+        <a href="{% url 'questions:pick' question.pk 1 %}" class="btn btn-secondary" onclick="return confirm('{{ question.first_question }}을 선택하시겠습니까?')">{{ question.first_question }}</a>
+        {{ question.first_count }}
+        ({{ first_rate }} %)
+        </p>
+      </div>
+      <br>
+
+      <div>
+        <p>
+        <a href="{% url 'questions:pick' question.pk 2 %}" class="btn btn-secondary" onclick="return confirm('{{ question.second_question }}을 선택하시겠습니까?')">{{ question.second_question }}</a>
+        {{ question.second_count }}
+        ({{ second_rate }} %)
+        </p>
+      </div>
+    {% endif %}
+    
+
+    <hr>
+    <h2>Comments</h2>
+    <ul>
+      {% for comment in question.comment_set.all %}
+        <li> {{ comment.content }} </li>
+      {% endfor %}
+    </ul>
+
+
+    <hr>
+    <form action="{% url 'questions:create_comment' question.pk %}" method="POST">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <input type="submit" class="btn btn-primary" value="댓글달기">
+    </form>
+    <hr>
+  {% comment %} {% endfor %} {% endcomment %}
+
+{% endblock content %}
+
+
+
